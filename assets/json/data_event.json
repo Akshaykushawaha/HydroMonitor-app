@@ -1,0 +1,56 @@
+[
+  {
+    "id" : "temp",
+    "title" : "Temperature Sensor",
+    "image" : "assets/images/thermo.png",
+    "date" : "01 live",
+    "status": "green",
+    "location" : "26 °C",
+    "description" : "Temperature is a critical factor in hydroponics as it affects the growth rate of plants and their nutrient uptake. High water temperature can cause stress to plants and reduce nutrient solubility. "
+  },
+  {
+    "id" : "humidity",
+    "title" : "Light Detector sensor",
+    "image" : "assets/images/sun.png",
+    "date" : "02 live",
+    "status" : "red",
+    "location" : "sunlight 53% (ideal)",
+    "description" : "Light is essential for plant growth in hydroponics as it is the primary source of energy for photosynthesis, and it influences plant morphology and physiology. The intensity, spectrum, and duration of light affect plant growth, development, yield, and quality in hydroponic systems. "
+  },
+  {
+    "id" : "light",
+    "title" : "Water level",
+    "image" : "assets/images/sun.png",
+    "date" : "02 live",
+    "status": "green",
+    "location" : "30% (Low)",
+    "description" : "Light is essential for plant growth in hydroponics as it is the primary source of energy for photosynthesis, and it influences plant morphology and physiology. The intensity, spectrum, and duration of light affect plant growth, development, yield, and quality in hydroponic systems. "
+  },
+  {
+    "id" : "soil",
+    "title" : "Humidity sensor",
+    "image" : "assets/images/sun.png",
+    "date" : "02 live",
+    "status" : "red",
+    "location" : "53% (Normal)",
+    "description" : "Light is essential for plant growth in hydroponics as it is the primary source of energy for photosynthesis, and it influences plant morphology and physiology. The intensity, spectrum, and duration of light affect plant growth, development, yield, and quality in hydroponic systems. "
+  },
+  {
+    "id" : "water",
+    "title" : "Soil Moisture",
+    "image" : "assets/images/sun.png",
+    "date" : "03 live",
+    "status" : "red",
+    "location" : "87% (Normal)",
+    "description" : "Fertilizers are crucial for providing essential nutrients to plants in hydroponics as there is no soil to supply them. The type, concentration, and application method of fertilizers affect plant growth, yield, and nutrient uptake efficiency in hydroponic systems. "
+  },
+  {
+    "id" : "npk",
+    "title" : "NPK Sensor",
+    "image" : "assets/images/sun.png",
+    "date" : "02 live",
+    "status": "green",
+    "location" : "N:72 , P:39 , K:25 (mg/kg)",
+    "description" : "Light is essential for plant growth in hydroponics as it is the primary source of energy for photosynthesis, and it influences plant morphology and physiology. The intensity, spectrum, and duration of light affect plant growth, development, yield, and quality in hydroponic systems. "
+  }
+]
