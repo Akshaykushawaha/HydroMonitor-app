@@ -34,7 +34,7 @@ class MyApp1 extends State<MyApp>{
             );
           case NamedRoutes.ticketScreen:
             return MaterialPageRoute(
-              builder: (context) => const TicketPage(),
+              builder: (context) => TemperatureChartPage(),
               settings: settings,
             );
           default:

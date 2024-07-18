@@ -18,35 +18,37 @@ class DetailPage extends StatefulWidget {
   DetailPage1 createState() => DetailPage1();
 }
 
-
-class DetailPage1 extends State<DetailPage>{
+class DetailPage1 extends State<DetailPage> {
   var data;
   late Timer timer;
   var output;
-  String out="--";
+  String out = "--";
   @override
   void initState() {
     super.initState();
     addValue();
-    timer = Timer.periodic(const Duration(seconds: 5), (Timer t) => addValue());
+    timer = Timer.periodic(const Duration(seconds: 500000), (Timer t) => addValue());
   }
+
   void addValue() async {
-    String url = "https://hydromonitor.azurewebsites.net/fdata?sensor=no";
+    String url = "http://192.168.1.7:5000/fdata";
     data = await Getdata(url);
     setState(() {
       var decoded = jsonDecode(data);
       output = decoded;
-    }
-    );
+    });
   }
+
   @override
   void dispose() {
     timer?.cancel();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    final Map <String , dynamic> eventData = ModalRoute.of(context)!.settings.arguments as Map< String , dynamic >;
+    final Map<String, dynamic> eventData =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final EventModel eventModel = EventModel.fromJson(eventData);
     return Scaffold(
       appBar:
@@ -64,7 +66,7 @@ class DetailPage1 extends State<DetailPage>{
                     const SizedBox(height: 24),
                     _buildCardImage(eventModel),
                     const SizedBox(height: 16),
-                    _buildDescription(eventModel,out,output),
+                    _buildDescription(eventModel, out, output),
                   ],
                 ),
               ),
@@ -99,7 +101,7 @@ class DetailPage1 extends State<DetailPage>{
                 const Text(
                   "Sensor Status:",
                   style:
-                  TextStyle(fontSize: 12, color: AppColors.greyTextColor),
+                      TextStyle(fontSize: 12, color: AppColors.greyTextColor),
                 ),
                 const SizedBox(height: 6),
                 Row(
@@ -112,30 +114,23 @@ class DetailPage1 extends State<DetailPage>{
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(width: 2),
-                    Text(
-                      "",
-                      style: TextStyle(
-                          fontSize: 12, color: AppColors.greyTextColor),
-                    )
                   ],
                 )
               ],
             ),
             ElevatedButton(
-              onPressed: () =>
-                  Navigator.pushNamed(
-                    context,
-                    NamedRoutes.ticketScreen,
-                    arguments: eventModel.toJson(),
-                  ),
+              onPressed: () => Navigator.pushNamed(
+                context,
+                NamedRoutes.ticketScreen,
+                arguments: eventModel.toJson(),
+              ),
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   maximumSize: const Size(200, 150)),
               child: const Text(
                 "See record",
@@ -148,176 +143,168 @@ class DetailPage1 extends State<DetailPage>{
     );
   }
 
-    Widget _buildCardImage(EventModel eventModel) =>
-        Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 280,
+  Widget _buildCardImage(EventModel eventModel) => Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 280,
+            decoration: BoxDecoration(
+                color: AppColors.whiteColor,
+                borderRadius: BorderRadius.circular(16)),
+          ),
+          Container(
+            width: double.infinity,
+            height: 310,
+            margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage(
+                  eventModel.image,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 22,
+            top: 22,
+            child: Container(
+              height: 65,
+              width: 48,
               decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  borderRadius: BorderRadius.circular(16)),
-            ),
-            Container(
-              width: double.infinity,
-              height: 310,
-              margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage(
-                    eventModel.image,
-                  ),
-                ),
+                color: AppColors.whiteColor,
+                borderRadius: BorderRadius.circular(10),
               ),
-            ),
-            Positioned(
-              right: 22,
-              top: 22,
-              child: Container(
-                height: 65,
-                width: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      eventModel.date.split(" ")[0],
-                    ),
-                    Text(
-                      eventModel.date.split(" ")[1],
-                      style: const TextStyle(
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        );
-
-    Widget _buildAppBar(BuildContext context) =>
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            CircleButton(
-              icon: 'assets/images/ic_arrow_left.png',
-              onTap: () => Navigator.pop(context),
-            ),
-            const Text(
-              "Detail",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            CircleButton(
-              icon: 'assets/images/ic_dots.png',
-              onTap: () {},
-            )
-          ],
-        );
-  }
-  _buildDescription(EventModel eventModel, out, output) {
-    if (output==null){
-      out="--";
-    }
-    else{
-      out = output[eventModel.id];
-    }
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      eventModel.title,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/ic_location.png',
-                          width: 16,
-                          height: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          out,
-                          style:
-                          const TextStyle(color: AppColors.greyTextColor),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 65,
-                  height: 35,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryLightColor,
-                    borderRadius: BorderRadius.circular(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    eventModel.date.split(" ")[0],
                   ),
-                  child: const Text(
-                    "Live",
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(height: 16),
-            const StackParticipant(
-              fontSize: 14,
-              width: 30,
-              height: 30,
-              positionText: 100,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "Description",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 6),
-            RichText(
-              textAlign: TextAlign.justify,
-              text: TextSpan(
-                text: eventModel.description,
-                style: const TextStyle(
-                  color: AppColors.greyTextColor,
-                  fontSize: 12,
-                  height: 1.75,
-                ),
-                children: const [
-                  TextSpan(
-                    text: "",
-                    style: TextStyle(
+                  Text(
+                    eventModel.date.split(" ")[1],
+                    style: const TextStyle(
                       color: AppColors.primaryColor,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 64),
+          )
+        ],
+      );
+
+  Widget _buildAppBar(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CircleButton(
+            icon: 'assets/images/ic_arrow_left.png',
+            onTap: () => Navigator.pop(context),
+          ),
+          const Text(
+            "Detail",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          CircleButton(
+            icon: 'assets/images/ic_dots.png',
+            onTap: () {},
+          )
+        ],
+      );
+}
+
+_buildDescription(EventModel eventModel, out, output) {
+  if (output == null) {
+    out = "--";
+  } else {
+    out = output[eventModel.id];
+  }
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  eventModel.title,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/ic_location.png',
+                      width: 16,
+                      height: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      out,
+                      style: const TextStyle(color: AppColors.greyTextColor),
+                    )
+                  ],
+                ),
+              ],
+            ),
+            Container(
+              width: 65,
+              height: 35,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.primaryLightColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                "Live",
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
           ],
         ),
-      );
-    }
+        const SizedBox(height: 16),
+        const SizedBox(height: 16),
+        const Text(
+          "Description",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 6),
+        SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+               RichText(
+                  textAlign: TextAlign.justify,
+                  text: TextSpan(
+                    text: eventModel.description,
+                    style: const TextStyle(
+                      color: AppColors.greyTextColor,
+                      fontSize: 12,
+                      height: 1.75,
+                    ),
+                  ),
+                ),
 
+              const SizedBox(height: 25),
+              Image.network("https://purehydroponics.com/wp-content/uploads/2016/08/Temperature-Vs-DO-Levels.gif"),
+              const SizedBox(height: 80),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}

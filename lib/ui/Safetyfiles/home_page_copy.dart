@@ -19,49 +19,52 @@ class HomePage extends StatefulWidget {
   _Homepage1 createState() => _Homepage1();
 }
 
-class _Homepage1 extends State<HomePage> {
+class _Homepage1 extends State<HomePage>{
   var data;
   late Timer timer;
-  String output = "--:-- --";
+  String output="--:-- --";
   var out;
 
   @override
   void initState() {
     super.initState();
     addValue(0);
-    timer =
-        Timer.periodic(const Duration(seconds: 5), (Timer t) => addValue(1));
+    timer = Timer.periodic(const Duration(seconds: 3), (Timer t) => addValue(1));
   }
-
   void addValue(o) async {
-    String url = "http://192.168.1.7:5000/fdata";
-    if (o == 0) {
-      String url = "http://192.168.1.7:5000/fdata";
+    String url = "http://127.0.0.1:14/fdata";
+    if (o==0) {
+      String url = "http://127.0.0.1:14/fdata";
     }
     data = await Getdata(url);
     setState(() {
       var decoded = jsonDecode(data);
       output = decoded['val'];
       out = decoded;
-    });
+    }
+    );
   }
-
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     return Scaffold(
       appBar:
-          const PreferredSize(preferredSize: Size(0, 0), child: CustomAppBar()),
-
+      const PreferredSize(preferredSize: Size(0, 0), child: CustomAppBar()),
+      bottomNavigationBar: const ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+          child: MyNavigationBar()),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Expanded(
+    child: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 30),
           child: Column(
             children: [
@@ -69,65 +72,72 @@ class _Homepage1 extends State<HomePage> {
               const SizedBox(height: 24),
               _buildSearch(),
               const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Status of sensors :",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "(Last Updated: at $output)",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                    BlocProvider(
-                      create: (_) => EventCubit()..loadEventData(),
-                      child: Column(
-                        children: [
-                          BlocBuilder<EventCubit, EventState>(
-                            builder: (context, state) {
-                              if (state is EventError) {
-                                return Center(child: Text(state.message));
-                              } else if (state is EventLoaded) {
-                                return _listPopularEvent(state.events, out);
-                              } else {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              Expanded(child: Container(
+                child:
+             Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Status of sensors :",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
                 ),
-              )
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  "(Last Updated: at "+output+")",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+            BlocProvider(create: (_) =>
+            EventCubit()
+              ..loadEventData(),
+              child: Column(
+                children: [
+                  BlocBuilder<EventCubit, EventState>(
+                    builder: (context, state) {
+                      if (state is EventError) {
+                        return Center(child: Text(state.message));
+                      } else if (state is EventLoaded) {
+                        return _listPopularEvent(state.events,out);
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+              ),
+              ),
             ],
           ),
         ),
+      ),
       ),
     );
   }
 }
 
-_buildHeader() => Padding(
+
+
+    _buildHeader() => Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -173,7 +183,7 @@ _buildHeader() => Padding(
       ),
     );
 
-_buildSearch() => Container(
+    _buildSearch() => Container(
       height: 48,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -184,8 +194,8 @@ _buildSearch() => Container(
       ),
       child: Row(
         children: const [
-          SizedBox(width: 8),
-          Text(
+           SizedBox(width: 8),
+           Text(
             "          Greener Earth, Cleaner Earth!!",
             style: TextStyle(
                 color: AppColors.greyTextColor, fontWeight: FontWeight.w400),
@@ -194,40 +204,43 @@ _buildSearch() => Container(
       ),
     );
 
-_listPopularEvent(List<EventModel> events, out) {
-  print(out);
-  print("The values received:");
-  if (out == null) {
-    out = {
-      'temp': "--",
-      'humidity': "--",
-      'light': "--",
-      'soil': "--",
-      'water': "--",
-      'npk': "--",
-      'time': "--"
-    };
-    print("here start");
-    print(out);
-    print("here end");
-  }
-  return Container(
-    width: double.infinity,
-    height: 450,
-    padding: const EdgeInsets.only(left: 5),
-    child: ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      itemCount: events.length,
-      itemBuilder: (context, index) => GestureDetector(
-        onTap: () => Navigator.pushNamed(
-          arguments: events[index].toJson(),
-          context,
-          NamedRoutes.detailScreen,
+    _listPopularEvent(List<EventModel> events,out) {
+      print(out);
+      print("The values received:");
+      if (out == null) {
+        out = {
+          'temp': "--",
+          'humidity': "--",
+          'light': "--",
+          'soil': "--",
+          'water': "--",
+          'npk': "--",
+          'time': "--"
+        };
+        print("here start");
+        print(out);
+        print("here end");
+      }
+      return Container(
+        width: double.infinity,
+        height: 450,
+        padding: const EdgeInsets.only(left: 5),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          itemCount: events.length,
+          itemBuilder: (context, index) =>
+              GestureDetector(
+                onTap: () =>
+                    Navigator.pushNamed(
+                      arguments: events[index].toJson(),
+                      context,
+                      NamedRoutes.detailScreen,
+                    ),
+                child: CardPopularEvent(
+                    title: events[index].title, id: out[events[index].id]),
+              ),
         ),
-        child: CardPopularEvent(
-            title: events[index].title, id: out[events[index].id]),
-      ),
-    ),
-  );
-}
+      );
+    }
+
